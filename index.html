@@ -38,7 +38,7 @@ h2{margin:0 0 20px;font:400 clamp(46px,10vw,80px)/.95 var(--head);text-transform
 .ride{display:grid;grid-template-columns:90px 1fr;gap:16px;padding:18px;background:var(--card);border-left:4px solid var(--pink)}
 .ride.n{border-color:var(--lime)}
 [hidden]{display:none!important}
-.start{margin:0 0 8px;font-size:16px}.start a,.notes{white-space:pre-line}.notes{margin:0 0 10px;font-size:16px}.ride.m{border-color:var(--orange)}
+.start{margin:0 0 8px;font-size:16px}.start a,.notes{white-space:pre-line}.notes{margin:0 0 10px;font-size:16px}.tags{margin:0 0 18px}.tags:empty{display:none}.ride.m{border-color:var(--orange)}
 .day{font:400 36px/1 var(--head);text-transform:uppercase}
 .day small{display:block;font:400 18px var(--head);letter-spacing:.1em;color:var(--mute);margin-top:4px}
 .ride h3{margin:0;font:400 29px/1.1 var(--head);text-transform:uppercase}
@@ -78,8 +78,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
 <p class="kick">Ride with us</p>
 <h2>Next rides</h2>
 <div class="two">
-<div class="card"><p class="kick">Real world</p><h3 id="r-when">Coming soon</h3><p id="r-what">No ride on the calendar yet.</p><p class="start" id="r-start" hidden>Start: <a id="r-map" target="_blank" rel="noopener"></a></p><p class="notes" id="r-notes" hidden></p><span class="tag t1" id="r-gravel" hidden>Gravel</span><span class="tag t1">No-drop</span><span class="tag t1">Social pace</span><ul><li>About 40 miles, regroup at the top</li><li>Bring a helmet, two bottles, and a spare tube</li></ul><a class="btn" id="r-link" hidden>Route and details</a></div>
-<div class="card"><p class="kick">Virtual</p><h3 id="v-when">Coming soon</h3><p id="v-what">No ride on the calendar yet.</p><p class="notes" id="v-notes" hidden></p><span class="tag t2">Zwift</span><span class="tag t2">Steady</span><ul><li>Join from your trainer anywhere</li></ul><a class="btn" id="v-link" hidden>Event link</a></div>
+<div class="card"><p class="kick">Real world</p><h3 id="r-when">Coming soon</h3><p id="r-what">No ride on the calendar yet.</p><p class="start" id="r-start" hidden>Start: <a id="r-map" target="_blank" rel="noopener"></a></p><p class="notes" id="r-notes" hidden></p><div class="tags" id="r-tags"></div><a class="btn" id="r-link" hidden>Route and details</a></div>
+<div class="card"><p class="kick">Virtual</p><h3 id="v-when">Coming soon</h3><p id="v-what">No ride on the calendar yet.</p><p class="notes" id="v-notes" hidden></p><div class="tags" id="v-tags"></div><ul><li>Join from your trainer anywhere</li></ul><a class="btn" id="v-link" hidden>Event link</a></div>
 </div>
 <p class="note" id="cal-note"></p>
 <div class="clubs"><p class="kick">Add rides to your calendar</p><a class="btn" id="sub-g" href="#CALENDAR">Subscribe in Google Calendar</a><a class="btn ghost" id="sub-ics" href="#CALENDAR">Apple or Outlook</a></div>
@@ -120,7 +120,9 @@ const URL_RE=/https?:\/\/[^\s<>"]+/;
 const link=e=>(e.description.match(URL_RE)||[])[0];
 // A bare "Route: <url>" line duplicates the card's button, so skip it.
 const isButtonLine=(l,url)=>!!url&&l.includes(url)&&/^\S*$/.test(l.replace(url,"").trim());
-const notes=e=>e.description.split("\n").filter(l=>!isButtonLine(l,link(e))).join("\n").replace(/\n{3,}/g,"\n\n").trim();
+const TAGS_LINE=/^\s*tags:(.*)$/im;
+const tags=e=>((e.description.match(TAGS_LINE)||[])[1]||"").split(",").map(t=>t.trim()).filter(Boolean);
+const notes=e=>e.description.split("\n").filter(l=>!isButtonLine(l,link(e))&&!TAGS_LINE.test(l)).join("\n").replace(/\n{3,}/g,"\n\n").trim();
 const linkify=(node,s)=>node.append(...s.split(/(https?:\/\/[^\s<>"]+)/).map((part,i)=>i%2?Object.assign(el("a",null,new URL(part).hostname.replace(/^www\./,"")),{href:part,target:"_blank",rel:"noopener"}):part));
 const time=d=>d.toLocaleString([],{weekday:"short",hour:"numeric",minute:"2-digit"});
 const fillRide=(p,e)=>{
@@ -131,7 +133,7 @@ const url=link(e);
 if(url)Object.assign($(p+"-link"),{href:url,hidden:false});
 const n=notes(e);
 if(n){linkify($(p+"-notes"),n);$(p+"-notes").hidden=false;}
-if(p=="r")$("r-gravel").hidden=!/\bgravel\b/i.test(e.summary);
+$(p+"-tags").append(...tags(e).map(t=>el("span","tag "+(p=="r"?"t1":"t2"),t)));
 if(p!="r"||!e.location)return;
 Object.assign($("r-map"),{textContent:e.location,href:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(e.location)});
 $("r-start").hidden=false;};
@@ -141,7 +143,9 @@ const row=el("div","ride "+["","m","n"][i%3]);
 const day=el("div","day",d.toLocaleString([],{month:"short"}));
 day.append(el("small",null,d.getDate()));
 info.append(el("h3",null,e.summary),el("p",null,[e.allDay?"":time(d),e.location].filter(Boolean).join(" \u00b7 ")));
-if(url)info.append(Object.assign(el("a","tag "+["t3","t2","t1"][i%3],"Details"),{href:url,target:"_blank",rel:"noopener"}));
+const tagClass="tag "+["t3","t2","t1"][i%3];
+info.append(...tags(e).map(t=>el("span",tagClass,t)));
+if(url)info.append(Object.assign(el("a",tagClass,"Details"),{href:url,target:"_blank",rel:"noopener"}));
 row.append(day,info);
 return row;};
 fetch("events.json").then(r=>{if(!r.ok)throw 0;return r.json()}).then(events=>{

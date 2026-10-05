@@ -7,7 +7,7 @@ Single-page static site. Edit `index.html` and commit; GitHub Pages redeploys au
   - Events with "zwift" in the title or location fill the Virtual card; other timed events fill the Real World card
   - Events with "race", "crit" or "criterium" in the title appear under Upcoming races (all-day is fine)
   - The event's Location is shown as the start address, linked to Google Maps
-  - Real World rides with "gravel" in the title get a Gravel pill
+  - Pills come from a `Tags: No-drop, Social pace` line in the description
   - The first URL in the event description becomes the card's button or the race's Details link
   - The rest of a ride's description (lines without links) is shown on its card, e.g. "Lights required: front and rear"
 - Domain: the `CNAME` file holds `ridedomestique.com`
