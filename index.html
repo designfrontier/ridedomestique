@@ -36,7 +36,9 @@ section{padding:56px 0;border-bottom:1px solid var(--line)}
 h2{margin:0 0 20px;font:400 clamp(46px,10vw,80px)/.95 var(--head);text-transform:uppercase}
 .rides{display:grid;gap:12px}
 .ride{display:grid;grid-template-columns:90px 1fr;gap:16px;padding:18px;background:var(--card);border-left:4px solid var(--pink)}
-.ride.n{border-color:var(--lime)}.ride.m{border-color:var(--orange)}
+.ride.n{border-color:var(--lime)}
+[hidden]{display:none!important}
+.start{margin:0 0 8px;font-size:16px}.ride.m{border-color:var(--orange)}
 .day{font:400 36px/1 var(--head);text-transform:uppercase}
 .day small{display:block;font:400 18px var(--head);letter-spacing:.1em;color:var(--mute);margin-top:4px}
 .ride h3{margin:0;font:400 29px/1.1 var(--head);text-transform:uppercase}
@@ -76,10 +78,10 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
 <p class="kick">Ride with us</p>
 <h2>Next rides</h2>
 <div class="two">
-<div class="card"><p class="kick">Real world</p><h3 id="r-when">Sat 8:00 AM</h3><p id="r-what">Group ride. Start location and route link here.</p><span class="tag t1">No-drop</span><span class="tag t1">Social pace</span><ul><li>About 40 miles, regroup at the top</li><li>Bring a helmet, two bottles, and a spare tube</li></ul><a class="btn" id="r-link" href="#ROUTE-URL">Route and details</a></div>
-<div class="card"><p class="kick">Virtual</p><h3 id="v-when">Tue 6:30 PM</h3><p id="v-what">Zwift group ride. Event link here.</p><span class="tag t2">Zwift</span><span class="tag t2">Steady</span><ul><li>Join from your trainer anywhere</li><li>Voice chat optional</li></ul><a class="btn" id="v-link" href="#ZWIFT-EVENT-URL">Event link</a></div>
+<div class="card"><p class="kick">Real world</p><h3 id="r-when">Coming soon</h3><p id="r-what">No ride on the calendar yet.</p><p class="start" id="r-start" hidden>Start: <a id="r-map" target="_blank" rel="noopener"></a></p><span class="tag t1">No-drop</span><span class="tag t1">Social pace</span><ul><li>About 40 miles, regroup at the top</li><li>Bring a helmet, two bottles, and a spare tube</li></ul><a class="btn" id="r-link" hidden>Route and details</a></div>
+<div class="card"><p class="kick">Virtual</p><h3 id="v-when">Coming soon</h3><p id="v-what">No ride on the calendar yet.</p><span class="tag t2">Zwift</span><span class="tag t2">Steady</span><ul><li>Join from your trainer anywhere</li><li>Voice chat optional</li></ul><a class="btn" id="v-link" hidden>Event link</a></div>
 </div>
-<p class="note" id="cal-note">Placeholder days, times and details.</p>
+<p class="note" id="cal-note"></p>
 <div class="clubs"><p class="kick">Add rides to your calendar</p><a class="btn" id="sub-g" href="#CALENDAR">Subscribe in Google Calendar</a><a class="btn ghost" id="sub-ics" href="#CALENDAR">Apple or Outlook</a></div>
 <div class="clubs"><p class="kick">Never miss one</p><a class="btn strava" href="https://www.strava.com/clubs/ride-domestique">Join the Strava club</a><a class="btn zwift" href="https://www.zwift.com/clubs/89be23ff-6049-4d41-bb0e-586b771381a3/home">Join the Zwift club</a></div>
 <div class="fear"><b>Worried about getting dropped?</b> On the no-drop ride, you won't be. That is the whole point of it.</div>
@@ -88,12 +90,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
 <section id="race"><div class="wrap">
 <p class="kick">Race with us</p>
 <h2>Upcoming races</h2>
-<div class="rides">
-<div class="ride"><div class="day">Mar<small>21</small></div><div><h3>Race name here</h3><p>Location. Crit or road race. Team members attending.</p><span class="tag t3">Road</span><span class="tag t3">Cat 3/4</span></div></div>
-<div class="ride m"><div class="day">Apr<small>18</small></div><div><h3>Race name here</h3><p>Location. Details and team plan.</p><span class="tag t2">Crit</span><span class="tag t2">All cats</span></div></div>
-<div class="ride n"><div class="day">May<small>2</small></div><div><h3>Race name here</h3><p>Location. First race friendly.</p><span class="tag t1">Road race</span><span class="tag t1">Beginners welcome</span></div></div>
-</div>
-<p class="note">Placeholder dates and races.</p>
+<div class="rides" id="races"></div>
+<p class="note" id="race-note">No races on the calendar yet.</p>
 <div class="two" style="margin-top:20px">
 <div class="card"><h3>Already race?</h3><p>Train with riders who will work for you, and work for them. All categories welcome.</p><a class="btn" href="https://www.instagram.com/ridedomestique">Talk to a team lead</a></div>
 <div class="card"><h3>Never raced?</h3><p>Start with the group rides. When you are ready, we will help with licenses, categories, and your first start line.</p><a class="btn" href="#ride">Start with a ride</a></div>
@@ -107,24 +105,47 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
 </div></footer>
 <script>
 /* events.json is generated hourly from the public calendar by .github/workflows/deploy.yml. */
-var CAL_ID="35cfa93eb4c4828956cbf717fd98f029addd523951d50c4f80c540299476c391@group.calendar.google.com";
-(function(){
-var $=function(i){return document.getElementById(i)};
+const CAL_ID="35cfa93eb4c4828956cbf717fd98f029addd523951d50c4f80c540299476c391@group.calendar.google.com";
+(()=>{
+const $=id=>document.getElementById(id);
+const el=(tag,cls,text)=>Object.assign(document.createElement(tag),cls&&{className:cls},text!=null&&{textContent:text});
 $("sub-g").href="https://calendar.google.com/calendar/u/0/r?cid="+encodeURIComponent(CAL_ID);
 $("sub-ics").href="webcal://calendar.google.com/calendar/ical/"+encodeURIComponent(CAL_ID)+"/public/basic.ics";
-fetch("events.json").then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){
-var now=Date.now(),ev=d.filter(function(e){return new Date(e.start)>now});
-var virt=function(e){return /zwift/i.test((e.summary||"")+" "+(e.location||""))};
-var fill=function(p,e){if(!e)return;
-var t=new Date(e.start).toLocaleString([],{weekday:"short",hour:"numeric",minute:"2-digit"});
-$(p+"-when").textContent=t;
-var lines=(e.description||"").split("\n"),m=(e.description||"").match(/https?:\/\/\S+/);
-$(p+"-what").textContent=(e.summary||"")+(e.location?" \u00b7 "+e.location:"");
-if(m)$(p+"-link").href=m[0].replace(/[<>"]/g,"");};
-fill("r",ev.filter(function(e){return !virt(e)})[0]);
-fill("v",ev.filter(virt)[0]);
+// All-day starts are bare dates; parse them as local midnight, not UTC.
+const when=e=>e.allDay?new Date(...e.start.split("-").map((n,i)=>i==1?n-1:+n)):new Date(e.start);
+const text=e=>`${e.summary} ${e.location}`;
+const isVirtual=e=>/zwift/i.test(text(e));
+const isRace=e=>/\b(race|crit|criterium)\b/i.test(e.summary);
+const link=e=>(e.description.match(/https?:\/\/[^\s<>"]+/)||[])[0];
+const time=d=>d.toLocaleString([],{weekday:"short",hour:"numeric",minute:"2-digit"});
+const fillRide=(p,e)=>{
+if(!e)return;
+$(p+"-when").textContent=time(when(e));
+$(p+"-what").textContent=e.summary;
+const url=link(e);
+if(url)Object.assign($(p+"-link"),{href:url,hidden:false});
+if(p!="r"||!e.location)return;
+Object.assign($("r-map"),{textContent:e.location,href:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(e.location)});
+$("r-start").hidden=false;};
+const raceRow=(e,i)=>{
+const d=when(e),url=link(e),info=el("div");
+const row=el("div","ride "+["","m","n"][i%3]);
+const day=el("div","day",d.toLocaleString([],{month:"short"}));
+day.append(el("small",null,d.getDate()));
+info.append(el("h3",null,e.summary),el("p",null,[e.allDay?"":time(d),e.location].filter(Boolean).join(" \u00b7 ")));
+if(url)info.append(Object.assign(el("a","tag "+["t3","t2","t1"][i%3],"Details"),{href:url,target:"_blank",rel:"noopener"}));
+row.append(day,info);
+return row;};
+fetch("events.json").then(r=>{if(!r.ok)throw 0;return r.json()}).then(events=>{
+const today=new Date().setHours(0,0,0,0),now=Date.now();
+const upcoming=events.filter(e=>when(e)>=(e.allDay?today:now));
+const rides=upcoming.filter(e=>!e.allDay&&!isRace(e)),races=upcoming.filter(isRace);
+fillRide("r",rides.find(e=>!isVirtual(e)));
+fillRide("v",rides.find(isVirtual));
 $("cal-note").textContent="Live from the team calendar.";
-}).catch(function(){});
+$("races").append(...races.map(raceRow));
+if(races.length)$("race-note").textContent="Live from the team calendar.";
+}).catch(()=>{});
 })();
 </script>
 </body>

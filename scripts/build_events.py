@@ -2,7 +2,7 @@
 # requires-python = ">=3.12"
 # dependencies = ["icalendar==7.3.0", "recurring-ical-events==3.8.2"]
 # ///
-"""Print the upcoming timed events from an iCal feed as JSON for index.html."""
+"""Print the upcoming events from an iCal feed as JSON for index.html."""
 
 import json
 import os
@@ -15,8 +15,8 @@ import icalendar
 import recurring_ical_events
 
 LOCAL_TZ = ZoneInfo("America/Denver")
-LOOKAHEAD = timedelta(days=60)
-MAX_EVENTS = 30
+LOOKAHEAD = timedelta(days=365)
+MAX_EVENTS = 200
 
 
 def load_calendar(source):
@@ -27,21 +27,27 @@ def load_calendar(source):
         return icalendar.Calendar.from_ical(f.read())
 
 
+def iso_start(start):
+    if not isinstance(start, datetime):
+        return start.isoformat()
+    # Floating times carry no zone; the team calendar is in Utah.
+    return (start if start.tzinfo else start.replace(tzinfo=LOCAL_TZ)).isoformat()
+
+
 def to_event(component):
     start = component.decoded("DTSTART")
     return {
         "summary": str(component.get("SUMMARY", "")),
         "location": str(component.get("LOCATION", "")),
         "description": str(component.get("DESCRIPTION", "")),
-        # Floating times carry no zone; the team calendar is in Utah.
-        "start": (start if start.tzinfo else start.replace(tzinfo=LOCAL_TZ)).isoformat(),
+        "start": iso_start(start),
+        "allDay": not isinstance(start, datetime),
     }
 
 
 def upcoming(calendar, now):
     occurrences = recurring_ical_events.of(calendar).between(now, now + LOOKAHEAD)
-    timed = [c for c in occurrences if isinstance(c.decoded("DTSTART"), datetime)]
-    return sorted(map(to_event, timed), key=lambda e: e["start"])[:MAX_EVENTS]
+    return sorted(map(to_event, occurrences), key=lambda e: e["start"])[:MAX_EVENTS]
 
 
 if __name__ == "__main__":
