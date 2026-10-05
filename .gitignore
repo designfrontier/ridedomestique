@@ -1,0 +1,5 @@
+.DS_Store
+_site/
+events.json
+__pycache__/
+.venv/

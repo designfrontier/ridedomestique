@@ -106,20 +106,17 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
 <span><a href="https://www.instagram.com/ridedomestique">Instagram</a></span>
 </div></footer>
 <script>
-/* SETUP: public Google Calendar ID and a browser API key (Calendar API, read-only). Leave as-is to show placeholders. */
-var CAL_ID="35cfa93eb4c4828956cbf717fd98f029addd523951d50c4f80c540299476c391@group.calendar.google.com",API_KEY="AIzaSyBCgoC2l_QIGoG_tS-2TLvPWP31E-prxSU";
+/* events.json is generated hourly from the public calendar by .github/workflows/deploy.yml. */
+var CAL_ID="35cfa93eb4c4828956cbf717fd98f029addd523951d50c4f80c540299476c391@group.calendar.google.com";
 (function(){
 var $=function(i){return document.getElementById(i)};
-if(CAL_ID.indexOf("_HERE")<0){
 $("sub-g").href="https://calendar.google.com/calendar/u/0/r?cid="+encodeURIComponent(CAL_ID);
-$("sub-ics").href="webcal://calendar.google.com/calendar/ical/"+encodeURIComponent(CAL_ID)+"/public/basic.ics";}
-if(CAL_ID.indexOf("_HERE")>=0||API_KEY.indexOf("_HERE")>=0)return;
-var u="https://www.googleapis.com/calendar/v3/calendars/"+encodeURIComponent(CAL_ID)+"/events?singleEvents=true&orderBy=startTime&maxResults=30&timeMin="+encodeURIComponent(new Date().toISOString())+"&key="+API_KEY;
-fetch(u).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){
-var ev=(d.items||[]).filter(function(e){return e.start&&e.start.dateTime});
+$("sub-ics").href="webcal://calendar.google.com/calendar/ical/"+encodeURIComponent(CAL_ID)+"/public/basic.ics";
+fetch("events.json").then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){
+var now=Date.now(),ev=d.filter(function(e){return new Date(e.start)>now});
 var virt=function(e){return /zwift/i.test((e.summary||"")+" "+(e.location||""))};
 var fill=function(p,e){if(!e)return;
-var t=new Date(e.start.dateTime).toLocaleString([],{weekday:"short",hour:"numeric",minute:"2-digit"});
+var t=new Date(e.start).toLocaleString([],{weekday:"short",hour:"numeric",minute:"2-digit"});
 $(p+"-when").textContent=t;
 var lines=(e.description||"").split("\n"),m=(e.description||"").match(/https?:\/\/\S+/);
 $(p+"-what").textContent=(e.summary||"")+(e.location?" \u00b7 "+e.location:"");

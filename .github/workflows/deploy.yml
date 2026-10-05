@@ -1,0 +1,41 @@
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  ICS_URL: https://calendar.google.com/calendar/ical/35cfa93eb4c4828956cbf717fd98f029addd523951d50c4f80c540299476c391%40group.calendar.google.com/public/basic.ics
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+      - run: mkdir _site && cp index.html CNAME _site/
+      # A calendar outage should not block content deploys; the page falls back to placeholders.
+      - name: Build events.json
+        continue-on-error: true
+        run: uv run scripts/build_events.py > events.json && mv events.json _site/
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v5
