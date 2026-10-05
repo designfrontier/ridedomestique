@@ -78,7 +78,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
 <p class="kick">Ride with us</p>
 <h2>Next rides</h2>
 <div class="two">
-<div class="card"><p class="kick">Real world</p><h3 id="r-when">Coming soon</h3><p id="r-what">No ride on the calendar yet.</p><p class="start" id="r-start" hidden>Start: <a id="r-map" target="_blank" rel="noopener"></a></p><p class="notes" id="r-notes" hidden></p><span class="tag t1">No-drop</span><span class="tag t1">Social pace</span><ul><li>About 40 miles, regroup at the top</li><li>Bring a helmet, two bottles, and a spare tube</li></ul><a class="btn" id="r-link" hidden>Route and details</a></div>
+<div class="card"><p class="kick">Real world</p><h3 id="r-when">Coming soon</h3><p id="r-what">No ride on the calendar yet.</p><p class="start" id="r-start" hidden>Start: <a id="r-map" target="_blank" rel="noopener"></a></p><p class="notes" id="r-notes" hidden></p><span class="tag t1" id="r-gravel" hidden>Gravel</span><span class="tag t1">No-drop</span><span class="tag t1">Social pace</span><ul><li>About 40 miles, regroup at the top</li><li>Bring a helmet, two bottles, and a spare tube</li></ul><a class="btn" id="r-link" hidden>Route and details</a></div>
 <div class="card"><p class="kick">Virtual</p><h3 id="v-when">Coming soon</h3><p id="v-what">No ride on the calendar yet.</p><p class="notes" id="v-notes" hidden></p><span class="tag t2">Zwift</span><span class="tag t2">Steady</span><ul><li>Join from your trainer anywhere</li></ul><a class="btn" id="v-link" hidden>Event link</a></div>
 </div>
 <p class="note" id="cal-note"></p>
@@ -131,6 +131,7 @@ const url=link(e);
 if(url)Object.assign($(p+"-link"),{href:url,hidden:false});
 const n=notes(e);
 if(n){linkify($(p+"-notes"),n);$(p+"-notes").hidden=false;}
+if(p=="r")$("r-gravel").hidden=!/\bgravel\b/i.test(e.summary);
 if(p!="r"||!e.location)return;
 Object.assign($("r-map"),{textContent:e.location,href:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(e.location)});
 $("r-start").hidden=false;};
