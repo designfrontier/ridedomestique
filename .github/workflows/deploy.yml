@@ -27,7 +27,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.2.0
       - run: mkdir _site && cp index.html CNAME _site/
       # A calendar outage should not block content deploys; the page falls back to placeholders.
       - name: Build events.json
