@@ -8,4 +8,5 @@ Single-page static site. Edit `index.html` and commit; GitHub Pages redeploys au
   - Events with "race", "crit" or "criterium" in the title appear under Upcoming races (all-day is fine)
   - The event's Location is shown as the start address, linked to Google Maps
   - The first URL in the event description becomes the card's button or the race's Details link
+  - The rest of a ride's description (lines without links) is shown on its card, e.g. "Lights required: front and rear"
 - Domain: the `CNAME` file holds `ridedomestique.com`

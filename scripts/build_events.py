@@ -4,8 +4,10 @@
 # ///
 """Print the upcoming events from an iCal feed as JSON for index.html."""
 
+import html
 import json
 import os
+import re
 import sys
 import urllib.request
 from datetime import datetime, timedelta
@@ -27,6 +29,17 @@ def load_calendar(source):
         return icalendar.Calendar.from_ical(f.read())
 
 
+def plain_text(description):
+    """Google Calendar stores descriptions edited on the web as HTML."""
+    def anchor(m):
+        href, label = m.group(1), re.sub(r"<[^>]+>", "", m.group(2))
+        return href if label in ("", href) else f"{label} {href}"
+
+    text = re.sub(r'<a\b[^>]*href="([^"]*)"[^>]*>(.*?)</a>', anchor, description, flags=re.I | re.S)
+    text = re.sub(r"<br\s*/?>|</p>|</div>|</li>", "\n", text, flags=re.I)
+    return html.unescape(re.sub(r"<[^>]+>", "", text)).strip()
+
+
 def iso_start(start):
     if not isinstance(start, datetime):
         return start.isoformat()
@@ -39,7 +52,7 @@ def to_event(component):
     return {
         "summary": str(component.get("SUMMARY", "")),
         "location": str(component.get("LOCATION", "")),
-        "description": str(component.get("DESCRIPTION", "")),
+        "description": plain_text(str(component.get("DESCRIPTION", ""))),
         "start": iso_start(start),
         "allDay": not isinstance(start, datetime),
     }
