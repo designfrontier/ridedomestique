@@ -4,7 +4,7 @@ Single-page static site. Edit `index.html` and commit; GitHub Pages redeploys au
 
 - Ride card descriptions and tags: edit the cards in `index.html`
 - Calendar: rides come from the public Google Calendar (`CAL_ID` in `index.html`, `ICS_URL` in `.github/workflows/deploy.yml`); the workflow rebuilds `events.json` hourly
-  - Events with "zwift" in the title or location fill the Virtual card; other timed events fill the Real World card
+  - The next 4 timed events show as ride cards, soonest first; "zwift" in the title or location marks a ride Virtual
   - Events with "race", "crit" or "criterium" in the title appear under Upcoming races (all-day is fine)
   - The event's Location is shown as the start address, linked to Google Maps
   - Pills come from a `Tags: No-drop, Social pace` line in the description

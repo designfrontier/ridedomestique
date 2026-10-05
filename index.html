@@ -77,10 +77,10 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
 <section id="ride"><div class="wrap">
 <p class="kick">Ride with us</p>
 <h2>Next rides</h2>
-<div class="two">
-<div class="card"><p class="kick">Real world</p><h3 id="r-when">Coming soon</h3><p id="r-what">No ride on the calendar yet.</p><p class="start" id="r-start" hidden>Start: <a id="r-map" target="_blank" rel="noopener"></a></p><p class="notes" id="r-notes" hidden></p><div class="tags" id="r-tags"></div><a class="btn" id="r-link" hidden>Route and details</a></div>
-<div class="card"><p class="kick">Virtual</p><h3 id="v-when">Coming soon</h3><p id="v-what">No ride on the calendar yet.</p><p class="notes" id="v-notes" hidden></p><div class="tags" id="v-tags"></div><ul><li>Join from your trainer anywhere</li></ul><a class="btn" id="v-link" hidden>Event link</a></div>
+<div class="two" id="ride-cards">
+<div class="card"><p class="kick">Next ride</p><h3>Coming soon</h3><p>No rides on the calendar yet.</p></div>
 </div>
+<template id="ride-card"><div class="card"><p class="kick"></p><h3 class="when"></h3><p class="what"></p><p class="start" hidden>Start: <a target="_blank" rel="noopener"></a></p><p class="notes" hidden></p><div class="tags"></div><ul class="trainer" hidden><li>Join from your trainer anywhere</li></ul><a class="btn" hidden></a></div></template>
 <p class="note" id="cal-note"></p>
 <div class="clubs"><p class="kick">Add rides to your calendar</p><a class="btn" id="sub-g" href="#CALENDAR">Subscribe in Google Calendar</a><a class="btn ghost" id="sub-ics" href="#CALENDAR">Apple or Outlook</a></div>
 <div class="clubs"><p class="kick">Never miss one</p><a class="btn strava" href="https://www.strava.com/clubs/ride-domestique">Join the Strava club</a><a class="btn zwift" href="https://www.zwift.com/clubs/89be23ff-6049-4d41-bb0e-586b771381a3/home">Join the Zwift club</a></div>
@@ -125,18 +125,22 @@ const tags=e=>((e.description.match(TAGS_LINE)||[])[1]||"").split(",").map(t=>t.
 const notes=e=>e.description.split("\n").filter(l=>!isButtonLine(l,link(e))&&!TAGS_LINE.test(l)).join("\n").replace(/\n{3,}/g,"\n\n").trim();
 const linkify=(node,s)=>node.append(...s.split(/(https?:\/\/[^\s<>"]+)/).map((part,i)=>i%2?Object.assign(el("a",null,new URL(part).hostname.replace(/^www\./,"")),{href:part,target:"_blank",rel:"noopener"}):part));
 const time=d=>d.toLocaleString([],{weekday:"short",hour:"numeric",minute:"2-digit"});
-const fillRide=(p,e)=>{
-if(!e)return;
-$(p+"-when").textContent=time(when(e));
-$(p+"-what").textContent=e.summary;
-const url=link(e);
-if(url)Object.assign($(p+"-link"),{href:url,hidden:false});
-const n=notes(e);
-if(n){linkify($(p+"-notes"),n);$(p+"-notes").hidden=false;}
-$(p+"-tags").append(...tags(e).map(t=>el("span","tag "+(p=="r"?"t1":"t2"),t)));
-if(p!="r"||!e.location)return;
-Object.assign($("r-map"),{textContent:e.location,href:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(e.location)});
-$("r-start").hidden=false;};
+const MAX_RIDES=4;
+const rideTime=d=>d.toLocaleString([],{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+const rideCard=e=>{
+const card=$("ride-card").content.firstElementChild.cloneNode(true),q=s=>card.querySelector(s);
+const virtual=isVirtual(e),url=link(e),n=notes(e);
+q(".kick").textContent=virtual?"Virtual":"Real world";
+q(".when").textContent=rideTime(when(e));
+q(".what").textContent=e.summary;
+if(!virtual&&e.location){
+Object.assign(q(".start a"),{textContent:e.location,href:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(e.location)});
+q(".start").hidden=false;}
+if(n){linkify(q(".notes"),n);q(".notes").hidden=false;}
+q(".tags").append(...tags(e).map(t=>el("span","tag "+(virtual?"t2":"t1"),t)));
+q(".trainer").hidden=!virtual;
+if(url)Object.assign(q(".btn"),{textContent:virtual?"Event link":"Route and details",href:url,hidden:false});
+return card;};
 const raceRow=(e,i)=>{
 const d=when(e),url=link(e),info=el("div");
 const row=el("div","ride "+["","m","n"][i%3]);
@@ -150,10 +154,9 @@ row.append(day,info);
 return row;};
 fetch("events.json").then(r=>{if(!r.ok)throw 0;return r.json()}).then(events=>{
 const today=new Date().setHours(0,0,0,0),now=Date.now();
-const upcoming=events.filter(e=>when(e)>=(e.allDay?today:now));
+const upcoming=events.filter(e=>when(e)>=(e.allDay?today:now)).sort((a,b)=>when(a)-when(b));
 const rides=upcoming.filter(e=>!e.allDay&&!isRace(e)),races=upcoming.filter(isRace);
-fillRide("r",rides.find(e=>!isVirtual(e)));
-fillRide("v",rides.find(isVirtual));
+if(rides.length)$("ride-cards").replaceChildren(...rides.slice(0,MAX_RIDES).map(rideCard));
 $("cal-note").textContent="Live from the team calendar.";
 $("races").append(...races.map(raceRow));
 if(races.length)$("race-note").textContent="Live from the team calendar.";
