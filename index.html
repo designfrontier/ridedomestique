@@ -49,6 +49,7 @@ h2{margin:0 0 20px;font:400 clamp(46px,10vw,80px)/.95 var(--head);text-transform
 .two{display:grid;gap:14px}
 @media(min-width:720px){.two{grid-template-columns:1fr 1fr}}
 .card{padding:26px;background:var(--card)}
+#ride-cards .card{display:flex;flex-direction:column;align-items:flex-start}#ride-cards .btn{margin-top:auto}
 .card h3{margin:0 0 8px;font:400 36px/1 var(--head);text-transform:uppercase}
 .card ul{padding-left:18px;margin:12px 0 20px;color:var(--mute)}
 .clubs{margin-top:28px}
@@ -137,7 +138,8 @@ if(!virtual&&e.location){
 Object.assign(q(".start a"),{textContent:e.location,href:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(e.location)});
 q(".start").hidden=false;}
 if(n){linkify(q(".notes"),n);q(".notes").hidden=false;}
-q(".tags").append(...tags(e).map(t=>el("span","tag "+(virtual?"t2":"t1"),t)));
+const cardTags=virtual&&!tags(e).some(t=>/^virtual$/i.test(t))?["Virtual",...tags(e)]:tags(e);
+q(".tags").append(...cardTags.map(t=>el("span","tag "+(virtual?"t2":"t1"),t)));
 q(".trainer").hidden=!virtual;
 if(url)Object.assign(q(".btn"),{textContent:virtual?"Event link":"Route and details",href:url,hidden:false});
 return card;};
