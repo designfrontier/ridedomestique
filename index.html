@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ride Domestique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=League+Gothic&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0b0c;--ink:#f2efe9;--mute:#9a9a9a;--line:#26262a;--card:#141416;--pink:#ff4f7b;--orange:#ff9a2e;--lime:#b8f01f;--grad:linear-gradient(90deg,var(--pink),var(--orange),var(--lime));
+--head:"League Gothic","Arial Narrow",Impact,sans-serif;--body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f1ea;--ink:#111;--mute:#5c5c5c;--line:#d9d4c8;--card:#fff}}
+:root[data-theme="dark"]{--bg:#0b0b0c;--ink:#f2efe9;--mute:#9a9a9a;--line:#26262a;--card:#141416}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(60px + env(safe-area-inset-top,0px));scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--body)}
+a{color:inherit}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font:400 24px/1 var(--head);letter-spacing:.06em;text-transform:uppercase}
+.dot{width:28px;height:28px;border-radius:50%;background:var(--grad);color:#000;display:grid;place-items:center;font:400 20px/1 var(--head)}
+nav a{margin-left:18px;text-decoration:none;font:400 18px var(--head);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+nav a:hover{color:var(--ink)}
+.hero{padding:48px 0 40px;overflow:hidden}
+.stack{margin:0;font:400 clamp(70px,23vw,250px)/.92 var(--head);text-transform:uppercase;letter-spacing:.01em}
+.stack span{display:block}
+.stack .grad{display:inline-block;padding-right:.04em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pitch{max-width:560px;margin:28px 0 24px;font-size:20px}
+.btn{display:inline-block;padding:14px 26px;font:400 22px/1 var(--head);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;background:var(--pink);color:#000;border-radius:2px}
+.btn.ghost{background:none;border:2px solid var(--ink);color:var(--ink);margin-left:8px}
+.bar{height:6px;background:var(--grad)}
+section{padding:56px 0;border-bottom:1px solid var(--line)}
+.kick{font:400 18px var(--head);letter-spacing:.2em;text-transform:uppercase;color:var(--pink);margin:0 0 6px}
+h2{margin:0 0 20px;font:400 clamp(46px,10vw,80px)/.95 var(--head);text-transform:uppercase}
+.rides{display:grid;gap:12px}
+.ride{display:grid;grid-template-columns:90px 1fr;gap:16px;padding:18px;background:var(--card);border-left:4px solid var(--pink)}
+.ride.n{border-color:var(--lime)}.ride.m{border-color:var(--orange)}
+.day{font:400 36px/1 var(--head);text-transform:uppercase}
+.day small{display:block;font:400 18px var(--head);letter-spacing:.1em;color:var(--mute);margin-top:4px}
+.ride h3{margin:0;font:400 29px/1.1 var(--head);text-transform:uppercase}
+.ride p{margin:4px 0 8px;color:var(--mute);font-size:16px}
+.tag{display:inline-block;margin-right:6px;padding:2px 9px;border:1px solid currentColor;font:400 16px var(--head);letter-spacing:.12em;text-transform:uppercase}
+.t1{color:var(--lime)}.t2{color:var(--orange)}.t3{color:var(--pink)}
+.note{margin-top:14px;font-size:14px;color:var(--mute)}
+.two{display:grid;gap:14px}
+@media(min-width:720px){.two{grid-template-columns:1fr 1fr}}
+.card{padding:26px;background:var(--card)}
+.card h3{margin:0 0 8px;font:400 36px/1 var(--head);text-transform:uppercase}
+.card ul{padding-left:18px;margin:12px 0 20px;color:var(--mute)}
+.clubs{margin-top:28px}
+.btn.strava{background:var(--orange);margin-right:8px}
+.btn.zwift{background:var(--lime)}
+.fear{margin-top:28px;padding:22px;border:1px solid var(--line);font-size:18px}
+.fear b{font:400 24px var(--head);letter-spacing:.06em;text-transform:uppercase;color:var(--lime)}
+footer{padding:36px 0;color:var(--mute);font-size:15px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<a class="logo" href="#top"><span class="dot">D</span>Ride Domestique</a>
+<nav><a href="#ride">Ride</a><a href="#race">Race</a></nav>
+</div></header>
+
+<main id="top">
+<div class="hero"><div class="wrap">
+<h1 class="stack" aria-label="Ride Domestique"><span>Ride</span><span class="grad">Domestique</span></h1>
+<p class="pitch">We ride for each other. Racers and first-timers, one team, Utah roads.</p>
+<a class="btn" href="#ride">Ride with us</a><a class="btn ghost" href="#race">Race with us</a>
+</div></div>
+<div class="bar"></div>
+
+<section id="ride"><div class="wrap">
+<p class="kick">Ride with us</p>
+<h2>Next rides</h2>
+<div class="two">
+<div class="card"><p class="kick">Real world</p><h3 id="r-when">Sat 8:00 AM</h3><p id="r-what">Group ride. Start location and route link here.</p><span class="tag t1">No-drop</span><span class="tag t1">Social pace</span><ul><li>About 40 miles, regroup at the top</li><li>Bring a helmet, two bottles, and a spare tube</li></ul><a class="btn" id="r-link" href="#ROUTE-URL">Route and details</a></div>
+<div class="card"><p class="kick">Virtual</p><h3 id="v-when">Tue 6:30 PM</h3><p id="v-what">Zwift group ride. Event link here.</p><span class="tag t2">Zwift</span><span class="tag t2">Steady</span><ul><li>Join from your trainer anywhere</li><li>Voice chat optional</li></ul><a class="btn" id="v-link" href="#ZWIFT-EVENT-URL">Event link</a></div>
+</div>
+<p class="note" id="cal-note">Placeholder days, times and details.</p>
+<div class="clubs"><p class="kick">Add rides to your calendar</p><a class="btn" id="sub-g" href="#CALENDAR">Subscribe in Google Calendar</a><a class="btn ghost" id="sub-ics" href="#CALENDAR">Apple or Outlook</a></div>
+<div class="clubs"><p class="kick">Never miss one</p><a class="btn strava" href="https://www.strava.com/clubs/ride-domestique">Join the Strava club</a><a class="btn zwift" href="https://www.zwift.com/clubs/89be23ff-6049-4d41-bb0e-586b771381a3/home">Join the Zwift club</a></div>
+<div class="fear"><b>Worried about getting dropped?</b> On the no-drop ride, you won't be. That is the whole point of it.</div>
+</div></section>
+
+<section id="race"><div class="wrap">
+<p class="kick">Race with us</p>
+<h2>Upcoming races</h2>
+<div class="rides">
+<div class="ride"><div class="day">Mar<small>21</small></div><div><h3>Race name here</h3><p>Location. Crit or road race. Team members attending.</p><span class="tag t3">Road</span><span class="tag t3">Cat 3/4</span></div></div>
+<div class="ride m"><div class="day">Apr<small>18</small></div><div><h3>Race name here</h3><p>Location. Details and team plan.</p><span class="tag t2">Crit</span><span class="tag t2">All cats</span></div></div>
+<div class="ride n"><div class="day">May<small>2</small></div><div><h3>Race name here</h3><p>Location. First race friendly.</p><span class="tag t1">Road race</span><span class="tag t1">Beginners welcome</span></div></div>
+</div>
+<p class="note">Placeholder dates and races.</p>
+<div class="two" style="margin-top:20px">
+<div class="card"><h3>Already race?</h3><p>Train with riders who will work for you, and work for them. All categories welcome.</p><a class="btn" href="https://www.instagram.com/ridedomestique">Talk to a team lead</a></div>
+<div class="card"><h3>Never raced?</h3><p>Start with the group rides. When you are ready, we will help with licenses, categories, and your first start line.</p><a class="btn" href="#ride">Start with a ride</a></div>
+</div>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+<span>Ride Domestique &middot; Utah</span>
+<span><a href="https://www.instagram.com/ridedomestique">Instagram</a></span>
+</div></footer>
+<script>
+/* SETUP: public Google Calendar ID and a browser API key (Calendar API, read-only). Leave as-is to show placeholders. */
+var CAL_ID="CALENDAR_ID_HERE",API_KEY="API_KEY_HERE";
+(function(){
+var $=function(i){return document.getElementById(i)};
+if(CAL_ID.indexOf("_HERE")<0){
+$("sub-g").href="https://calendar.google.com/calendar/u/0/r?cid="+encodeURIComponent(CAL_ID);
+$("sub-ics").href="webcal://calendar.google.com/calendar/ical/"+encodeURIComponent(CAL_ID)+"/public/basic.ics";}
+if(CAL_ID.indexOf("_HERE")>=0||API_KEY.indexOf("_HERE")>=0)return;
+var u="https://www.googleapis.com/calendar/v3/calendars/"+encodeURIComponent(CAL_ID)+"/events?singleEvents=true&orderBy=startTime&maxResults=30&timeMin="+encodeURIComponent(new Date().toISOString())+"&key="+API_KEY;
+fetch(u).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){
+var ev=(d.items||[]).filter(function(e){return e.start&&e.start.dateTime});
+var virt=function(e){return /zwift/i.test((e.summary||"")+" "+(e.location||""))};
+var fill=function(p,e){if(!e)return;
+var t=new Date(e.start.dateTime).toLocaleString([],{weekday:"short",hour:"numeric",minute:"2-digit"});
+$(p+"-when").textContent=t;
+var lines=(e.description||"").split("\n"),m=(e.description||"").match(/https?:\/\/\S+/);
+$(p+"-what").textContent=(e.summary||"")+(e.location?" \u00b7 "+e.location:"");
+if(m)$(p+"-link").href=m[0].replace(/[<>"]/g,"");};
+fill("r",ev.filter(function(e){return !virt(e)})[0]);
+fill("v",ev.filter(virt)[0]);
+$("cal-note").textContent="Live from the team calendar.";
+}).catch(function(){});
+})();
+</script>
+</body>
+</html>
